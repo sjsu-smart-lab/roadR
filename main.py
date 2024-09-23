@@ -11,7 +11,7 @@ import data.transforms as vtf
 from data import VideoDataset
 from gen_dets import gen_dets
 from models.retinanet import build_retinanet
-from models.unet import UNet, build_unet
+from models.unet import build_unet
 from modules import utils
 from train import train
 # from tubes import build_eval_tubes
@@ -194,6 +194,8 @@ def main():
 
     parser.add_argument('--n_channels', type=int, default=3, help='Number of input channels')
     parser.add_argument('--n_classes', type=int, default=10, help='Number of classes for segmentation')
+    parser.add_argument('--num_anchors', type=int, default=9, help='Number of anchors for detection')  # added num_anchors
+
     args = parser.parse_args()
 
     train_dataset = None
@@ -302,7 +304,7 @@ def main():
     #         net = torch.nn.DataParallel(net)
     
     if args.MODE in ['train', 'val','gen_dets']:
-        net = build_unet(n_channels=args.n_channels, n_classes=args.n_classes, args=args).cuda()
+        net = build_unet(n_channels=args.n_channels, n_classes=args.n_classes, num_anchors=args.num_anchors, args=args).cuda()
         if args.MULTI_GPUS:
             logger.info('\nLets do dataparallel\n')
             net = torch.nn.DataParallel(net)
